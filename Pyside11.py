@@ -3,8 +3,9 @@ import os
 import json
 import random
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QListWidget, QDateEdit, QListWidgetItem,QMessageBox
-from datetime import datetime
-from PySide6.QtGui import QFont
+from datetime import datetime,timedelta
+from PySide6.QtGui import QFont,QColor
+
 
 class TodoApp(QWidget):
     def __init__(self):
@@ -37,7 +38,7 @@ class TodoApp(QWidget):
         self.todo_date.setDate(datetime.today().date()) #現在の日付に設定
         add_button = QPushButton('追加')
         add_button.clicked.connect(self.add_todo)
-        add_button2 = QPushButton('削除')
+        add_button2 = QPushButton('完了')
         add_button2.clicked.connect(self.delete_todo)
 
         todo_input_layout.addWidget(self.todo_input)
@@ -68,7 +69,6 @@ class TodoApp(QWidget):
             dt2 = datetime.strptime(date_str, "%Y-%m-%d").date()
             dt1 = datetime.today().date()
             dt3 = dt2- dt1
-            print(dt3.days)
             # ToDoアイテムを作成し、リストに追加
             todo_item = f"{todo_text} - {todo_date} - 締め切りまでの残り日数{dt3.days}日"
             item = QListWidgetItem(todo_item)
@@ -116,7 +116,25 @@ class TodoApp(QWidget):
         if os.path.exists('todo_list.json'):
             with open('todo_list.json', 'r') as f:
                 todo_items = json.load(f)
-                self.todo_list_widget.addItems(todo_items)
+                # 残り日付を再構築
+                todo_text = [todo.split(' - ')[0] for todo in todo_items]
+                dates = [todo.split(' - ')[1] for todo in todo_items]
+                for i in range(len(todo_text)):
+                    # 要素を取り出して文字列型に変換する
+                    first_element_as_str = str(dates[i])
+                    date_str = first_element_as_str
+                    dt2 = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    today = datetime.today().date()
+                    dt3 = dt2 - today
+
+                    #明日になった時の動作確認用
+                    #tomorrow = today + timedelta(days=1)
+                    #dt3 = dt2- tomorrow
+
+                    # 結果の表示
+                    todo_item = f"{todo_text[i]} - {dates[i]} - 締め切りまでの残り日数{dt3.days}日"
+                    item = QListWidgetItem(todo_item)
+                    self.todo_list_widget.addItem(item)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
