@@ -1,4 +1,4 @@
-import Pyside11 as g
+import todolist as g
 app = g.QApplication(g.sys.argv)
 todo_app = g.TodoApp()
 todo_app.show()
