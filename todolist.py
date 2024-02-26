@@ -125,16 +125,32 @@ class TodoApp(QWidget):
                     date_str = first_element_as_str
                     dt2 = datetime.strptime(date_str, "%Y-%m-%d").date()
                     today = datetime.today().date()
+                    global dt3
                     dt3 = dt2 - today
+
+                    self.color_chenge()
 
                     #明日になった時の動作確認用
                     #tomorrow = today + timedelta(days=1)
                     #dt3 = dt2- tomorrow
 
                     # 結果の表示
-                    todo_item = f"{todo_text[i]} - {dates[i]} - 締め切りまでの残り日数{dt3.days}日"
+                    global redtodo
+                    if redtodo == 0:
+                        todo_item = f"{todo_text[i]} - {dates[i]} - 締め切りまでの残り日数{dt3.days}日"
+                    else:
+                        todo_item = f"{todo_text[i]} - {dates[i]} - 締め切り日を過ぎています"
                     item = QListWidgetItem(todo_item)
                     self.todo_list_widget.addItem(item)
+
+    def color_chenge(self):
+        global dt3
+        dt4 = float(dt3.days)
+        if dt4 < 1:
+            global redtodo
+            redtodo = 1
+        else:
+            redtodo = 0
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
